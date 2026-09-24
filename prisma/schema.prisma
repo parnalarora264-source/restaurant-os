@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         UserRole  @default(STAFF)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  orders       Order[]   @relation("OrderStaff")
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  displayName String
+  sortOrder   Int        @default(0)
+  isActive    Boolean    @default(true)
+  menuItems   MenuItem[]
+}
+
+model MenuItem {
+  id          String      @id @default(cuid())
+  categoryId  String
+  name        String
+  description String?
+  price       Int
+  imageUrl    String?
+  isVeg       Boolean     @default(false)
+  isFeatured  Boolean     @default(false)
+  badge       String?
+  isAvailable Boolean     @default(true)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  category    Category    @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+
+  @@index([categoryId])
+  @@index([isAvailable])
+  @@index([isFeatured])
+}
+
+model Table {
+  id        String      @id @default(cuid())
+  number    Int         @unique
+  status    TableStatus @default(AVAILABLE)
+  qrToken   String      @unique @default(cuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  orders    Order[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique @default(cuid())
+  tableId       String?
+  customerName  String?
+  customerPhone String?
+  status        OrderStatus @default(NEW)
+  total         Int
+  notes         String?
+  staffId       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  staff         User?       @relation("OrderStaff", fields: [staffId], references: [id])
+  table         Table?      @relation(fields: [tableId], references: [id])
+  items         OrderItem[]
+
+  @@index([status])
+  @@index([tableId])
+  @@index([createdAt])
+  @@index([staffId])
+}
+
+model OrderItem {
+  id         String    @id @default(cuid())
+  orderId    String
+  menuItemId String?
+  name       String
+  unitPrice  Int
+  quantity   Int
+  notes      String?
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id])
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([menuItemId])
+}
+
+model InventoryItem {
+  id         String              @id @default(cuid())
+  name       String              @unique
+  quantity   Float               @default(0)
+  unit       String
+  lowStockAt Float
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  movements  InventoryMovement[]
+}
+
+model InventoryMovement {
+  id              String        @id @default(cuid())
+  inventoryItemId String
+  type            String
+  quantity        Float
+  reason          String?
+  createdAt       DateTime      @default(now())
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryItemId])
+  @@index([createdAt])
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  name        String
+  phone       String?   @unique
+  email       String?   @unique
+  totalOrders Int       @default(0)
+  totalSpent  Float     @default(0)
+  lastOrderAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  NEW
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  PAYMENT_PENDING
+  CLEANING
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+  KITCHEN
+}

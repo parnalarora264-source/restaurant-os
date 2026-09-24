@@ -1,0 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+@import "tailwindcss";
+:root{--olive:#3F4A32;--olive2:#697552;--sage:#8B9674;--cream:#F5EEDF;--cream2:#FBF7EF;--beige:#D9C7A8;--brown:#40352A;--gold:#B89452;--terracotta:#A85C43}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--brown);font-family:'DM Sans',sans-serif}.serif{font-family:'Playfair Display',serif}.paper{background-image:radial-gradient(rgba(64,53,42,.07) .6px,transparent .6px);background-size:7px 7px}.shadow-soft{box-shadow:0 18px 50px rgba(64,53,42,.10)}.focus-ring:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
