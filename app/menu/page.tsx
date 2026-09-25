@@ -25,7 +25,12 @@ function MenuContent() {
     return menu.filter(
       (x) =>
         x.isAvailable !== false &&
-        (cat === 'All' || x.category === cat) &&
+        (
+  cat === 'All' ||
+  x.category === cat ||
+  x.category?.displayName === cat ||
+  x.category?.name === cat
+) &&
         (!q ||
           x.name.toLowerCase().includes(q.toLowerCase()) ||
           (x.description || '').toLowerCase().includes(q.toLowerCase()))

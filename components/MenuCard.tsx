@@ -6,10 +6,10 @@ export default function MenuCard({ item }: { item: any }) {
     <article className="group overflow-hidden rounded-3xl border border-[#D9C7A8] bg-[#FBF7EF] shadow-[0_8px_30px_rgba(64,53,42,.06)]">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
-          src={item.imageUrl}
-          alt={item.name}
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-        />
+  src={item.imageUrl || '/placeholder-food.jpg'}
+  alt={item.name || 'Menu item'}
+  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+/>
 
         {item.badge && (
           <span className="absolute left-4 top-4 rounded-full bg-[#F5EEDF]/95 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#3F4A32]">
@@ -22,7 +22,7 @@ export default function MenuCard({ item }: { item: any }) {
         <div className="mb-2 flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[.16em] text-[#697552]">
-              {item.categoryDisplayName || item.category}
+              {item.categoryDisplayName || item.category?.displayName || item.category?.name || ''}
             </p>
 
             <h3 className="serif mt-1 text-xl font-semibold">
